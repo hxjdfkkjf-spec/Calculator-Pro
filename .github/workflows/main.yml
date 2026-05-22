@@ -1,4 +1,4 @@
-name: Build Android App Bundle
+name: Build Android App (APK & AAB)
 on: [push]
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Cordova & Build AAB
+      - name: Install Cordova & Build App
         run: |
           npm install -g cordova
           cordova create wrapper com.calculator.pro Calculator
@@ -28,10 +28,15 @@ jobs:
           cd ..
           rsync -a --exclude='wrapper' --exclude='.git' --exclude='.github' ./ wrapper/www/
           cd wrapper
+          # بناء نسخة الـ APK للتجربة والرفع المجاني
+          cordova build android --debug
+          # بناء نسخة الـ AAB للمتجر الرسمي مستقبلاً
           cordova build android --release -- --packageType=bundle
 
-      - name: Upload Artifact
+      - name: Upload APK & AAB Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Calculator-AAB
-          path: wrapper/platforms/android/app/build/outputs/bundle/release/*.aab
+          name: Calculator-Outputs
+          path: |
+            wrapper/platforms/android/app/build/outputs/apk/debug/*.apk
+            wrapper/platforms/android/app/build/outputs/bundle/release/*.aab
