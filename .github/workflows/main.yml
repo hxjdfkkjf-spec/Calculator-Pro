@@ -1,0 +1,21 @@
+name: Build Android App Bundle
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew bundleRelease
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Calculator-Release-AAB
+          path: app/build/outputs/bundle/release/*.aab
